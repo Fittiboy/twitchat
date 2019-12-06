@@ -43,7 +43,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
             self.exec_command(c, e)
 
     def exec_command(self, c, e):
-        url = 'https://api.twitch.tv/kraken/channle/' + self.channel_id
+        url = 'https://api.twitch.tv/kraken/channel/' + self.channel_id
         r = requests.get(url, headers=self.headers).json()
 
 def main():

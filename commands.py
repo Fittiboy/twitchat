@@ -1,6 +1,6 @@
 import functools
 from datetime import datetime
-from permissions import permissions as perms
+import shelve
 
 def exec(_commands):
     def exec_decorator(func):
@@ -52,8 +52,11 @@ class Commands:
 
             badges = {badge_list[0]:badge_list[1] for badge_list in badges_lists_list}
 
+            db = shelve.open('database')
+            perms = db['permissions']
             perm_uids = perms[func.__name__]['uids']
             perm_badges = perms[func.__name__]['badges']
+            db.close()
 
             permitted = False
             if uid in perm_uids:

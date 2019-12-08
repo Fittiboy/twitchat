@@ -3,7 +3,7 @@ import irc.bot
 import requests
 import time
 import commands
-import tokens
+import shelve
 
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel, keepalive=30):
@@ -63,12 +63,14 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         return e, c, self
 
 def main():
-    tkns = tokens.twitch
+    db = shelve.open('database')
+    tkns = db['tokens']['twitch']
     username = tkns['username']
     client_id = tkns['client_id']
     token =  tkns['token']
     channel = tkns['channel']
     keepalive = tkns['keepalive']
+    db.close()
 
     bot = TwitchBot(username, client_id, token, channel, keepalive)
     bot.start()

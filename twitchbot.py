@@ -59,8 +59,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
     # Check if command exists and checks for possible cooldown
     @commands.exec(commands.commands)
     def exec_command(self, c, e):
-        message_wordlist = e.arguments[0].split(" ")
-        return message_wordlist, c, self
+        return e, c, self
 
 def main():
     username = sys.argv[1]

@@ -1,17 +1,19 @@
 import functools
 from datetime import datetime
+from permissions import permissions as perms
 
 def exec(_commands):
     def exec_decorator(func):
         @functools.wraps(func)
         def exec_wrapper(*args, **kwargs):
-            msg, c, bot = func(*args, **kwargs)
+            e, c, bot = func(*args, **kwargs)
+            msg = e.arguments[0].split(" ")
             if len(msg[0]) == 1:
                 return
             cmd = msg[0][1:]
             cmd_func_name = f"on_{cmd}"
             method = getattr(_commands, cmd_func_name, _commands.do_nothing)
-            method(msg, c, bot)
+            method(e, msg, c, bot)
         return exec_wrapper
     return exec_decorator
 
@@ -39,13 +41,50 @@ class Commands:
             return cooldown_wrapper
         return cooldown_decorator
 
+    # Use this decorator to add permissions to a command
+    def check_permissions(func):
+        @functools.wraps(func)
+        def permissions_wrapper(*args, **kwargs):
+            uid = [dict['value'] for dict in args[1].tags if dict['key'] == 'user-id'][0]
+            badges_tag = [dict['value'] for dict in args[1].tags if dict['key'] == 'badges']
+            badges_list = badges_tag[0].split(",")
+            badges_lists_list = [badge.split("/") for badge in badges_list]
+
+            badges = {badge_list[0]:badge_list[1] for badge_list in badges_lists_list}
+
+            perm_uids = perms[func.__name__]['uids']
+            perm_badges = perms[func.__name__]['badges']
+
+            permitted = False
+            if uid in perm_uids:
+                permitted = True
+            else:
+                for badge, value in badges.items():
+                    if perm_badges.get(badge, "not_permitted") == value:
+                        permitted = True
+
+            if permitted == True:
+                func(*args, **kwargs)
+        return permissions_wrapper
+
+
     # Not to confuse with the IRC ping event
-    def on_ping(self, msg, c, bot):
+    def on_ping(self, e, msg, c, bot):
         c.privmsg(bot.channel, 'pong')
 
+    @check_permissions
     @update_cooldown(cooldown=30)
-    def on_raid(self, msg, c, bot):
+    def on_raid(self, e, msg, c, bot):
         print("raid")
+
+    '''A test function for you to check
+    if your bot works. Remember to add
+    your user-id to the dictionary in
+    permissions.py'''
+    @check_permissions
+    @update_cooldown(cooldown=3)
+    def on_test(self, e, msg, c, bot):
+        c.privmsg(bot.channel, 'passed')
 
 
 commands = Commands()

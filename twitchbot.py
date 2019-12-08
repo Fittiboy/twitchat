@@ -51,10 +51,12 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         self.reconnect *= 2
         c.reconnect()
 
+    # If message begins with "!", tries to execute command
     def on_pubmsg(self, c, e):
         if e.arguments[0][0] == "!":
             self.exec_command(c, e)
 
+    # Check if command exists and checks for possible cooldown
     @commands.exec(commands.commands)
     def exec_command(self, c, e):
         message_wordlist = e.arguments[0].split(" ")

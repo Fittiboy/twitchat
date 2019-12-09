@@ -63,7 +63,7 @@ class Commands:
                 permitted = True
             else:
                 for badge, value in badges.items():
-                    if perm_badges.get(badge, "not_permitted") == [value]:
+                    if perm_badges.get(badge, "not_permitted") == value:
                         permitted = True
 
             if permitted == True:
@@ -95,7 +95,8 @@ class Commands:
             return
         cmd_perms = perms.get(f'on_{cmd}', None)
         if cmd_perms == None:
-            perms[f'on_{cmd}'] = {'uids': [], 'badges': {}}
+            newperms = {'uids': [], 'badges': {}}
+            cmd_perms = newperms
         if tp == "user" and len(msg) == 5:
             user = msg[4]
             uid = get_uid(bot.client_id, user)
@@ -111,11 +112,11 @@ class Commands:
             badge = msg[4]
             value = msg[5]
             if aor == "add":
-                cmd_perms['badges'][badge] = [value]
+                cmd_perms['badges'][badge] = value
                 c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
                     now use !{cmd}")
             if aor == "remove":
-                if cmd_perms['badges'].get(badge) == [value]:
+                if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
                     no longer use !{cmd}")

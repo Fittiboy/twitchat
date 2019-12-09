@@ -1,6 +1,7 @@
 import functools
 from datetime import datetime
 import shelve
+from get_user_info import get_uid
 
 def exec(_commands):
     def exec_decorator(func):
@@ -79,6 +80,47 @@ class Commands:
     @update_cooldown(cooldown=30)
     def on_raid(self, e, msg, c, bot):
         print("raid")
+
+    @check_permissions
+    def on_permissions(self, e, msg, c, bot):
+        """Usage: !permissions add/remove command user/badge
+        {username}/{badgename} {badge_value}
+        you can check the badges at api.twitch.tv"""
+        db = shelve.open('database')
+        perms = db['permissions']
+        cmd_perms = perms.get(f'on_{cmd}', None)
+        aor = msg[1]
+        cmd = msg[2]
+        tp = msg[3]
+        if cmd_perms == None:
+            perms[f'on_{cmd}'] = {'uids': [], 'badges': {}}
+        if tp == "user" and len(msg) == 5:
+            user = msg[4]
+            uid = get_uid(bot.client_id, user)
+            if aor == "add":
+                if uid not in cmd_perms['uids']:
+                    cmd_perms['uids'].append(uid)
+                c.privmsg(bot.channel, f"{user} can now use !{cmd}")
+            elif aor == "remove"
+                if uid in cmd_perms['uids']:
+                    cmd_perms['uids'].remove(uid)
+                c.privmsg(bot.channel, f"{user} can no longer use !{cmd}")
+        elif tp == "badge" and len(msg) == 6:
+            badge = msg[4]
+            value = msg[5]
+            if aor == "add":
+                cmd_perms['badges'][badge] = [int(value)]
+                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
+                    now use !{cmd}")
+            if aor == "remove":
+                if cmd_perms['badges'].get(badge) == int(value):
+                    del cmd_perms['badges'][badge]
+                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
+                    no longer use !{cmd}")
+        perms[f'on_{cmd}'] = cmd_perms
+        db['permissions'] = perms
+        db.close()
+
 
     '''A test function for you to check
     if your bot works. Remember to add

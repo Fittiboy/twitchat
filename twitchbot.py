@@ -1,4 +1,3 @@
-import sys
 import irc.bot
 import requests
 import time

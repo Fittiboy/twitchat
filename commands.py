@@ -58,13 +58,12 @@ class Commands:
             perm_uids = perms[func.__name__]['uids']
             perm_badges = perms[func.__name__]['badges']
             db.close()
-
             permitted = False
             if uid in perm_uids:
                 permitted = True
             else:
                 for badge, value in badges.items():
-                    if perm_badges.get(badge, "not_permitted") == value:
+                    if perm_badges.get(badge, "not_permitted") == [value]:
                         permitted = True
 
             if permitted == True:
@@ -88,10 +87,13 @@ class Commands:
         you can check the badges at api.twitch.tv"""
         db = shelve.open('database')
         perms = db['permissions']
+        if len(msg) >= 4:
+            aor = msg[1]
+            cmd = msg[2]
+            tp = msg[3]
+        else:
+            return
         cmd_perms = perms.get(f'on_{cmd}', None)
-        aor = msg[1]
-        cmd = msg[2]
-        tp = msg[3]
         if cmd_perms == None:
             perms[f'on_{cmd}'] = {'uids': [], 'badges': {}}
         if tp == "user" and len(msg) == 5:
@@ -101,7 +103,7 @@ class Commands:
                 if uid not in cmd_perms['uids']:
                     cmd_perms['uids'].append(uid)
                 c.privmsg(bot.channel, f"{user} can now use !{cmd}")
-            elif aor == "remove"
+            elif aor == "remove":
                 if uid in cmd_perms['uids']:
                     cmd_perms['uids'].remove(uid)
                 c.privmsg(bot.channel, f"{user} can no longer use !{cmd}")
@@ -109,11 +111,11 @@ class Commands:
             badge = msg[4]
             value = msg[5]
             if aor == "add":
-                cmd_perms['badges'][badge] = [int(value)]
+                cmd_perms['badges'][badge] = [value]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
                     now use !{cmd}")
             if aor == "remove":
-                if cmd_perms['badges'].get(badge) == int(value):
+                if cmd_perms['badges'].get(badge) == [value]:
                     del cmd_perms['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
                     no longer use !{cmd}")

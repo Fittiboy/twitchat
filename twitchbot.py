@@ -4,14 +4,16 @@ import time
 import commands
 import json
 
+
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel, keepalive=30):
         self.client_id = client_id
         self.token = token
         self.channel = '#' + channel
-        self.headers = {'Client-ID': client_id, 'Accept': 'application/vnd.twitchtv.v5+json'}
+        self.headers = {'Client-ID': client_id,
+                        'Accept': 'application/vnd.twitchtv.v5+json'}
         self.keepalive = keepalive
-        self.reconnect = 1 # double every failed reconnection attmept
+        self.reconnect = 1  # double every failed reconnection attmept
 
         # Get the channel id, we will need this for v5 API calls
         url = 'https://api.twitch.tv/kraken/users?login=' + channel
@@ -22,8 +24,9 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         server = 'irc.chat.twitch.tv'
         port = 6667
         print('Connecting to ' + server + ' on port ' + str(port) + '...')
-        irc.bot.SingleServerIRCBot.__init__(self, [(server, port, 'oauth:'+token)],\
-        	username, username)
+        irc.bot.SingleServerIRCBot.__init__(
+                self, [(server, port, 'oauth:'+token)],
+                username, username)
 
     def on_welcome(self, c, e):
         print('Joining ' + self.channel)
@@ -62,17 +65,19 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         then executes if possible"""
         return e, c, self
 
+
 def main():
     with open('settings.json') as settings_file:
         settings = json.load(settings_file)
     username = settings['username']
     client_id = settings['client_id']
-    token =  settings['token']
+    token = settings['token']
     channel = settings['channel']
     keepalive = settings['keepalive']
 
     bot = TwitchBot(username, client_id, token, channel, keepalive)
     bot.start()
+
 
 if __name__ == "__main__":
     main()

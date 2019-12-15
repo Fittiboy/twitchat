@@ -72,6 +72,7 @@ class Commands:
                 func(*args, **kwargs)
         return permissions_wrapper
 
+    # ACTUAL COMMANDS GO HERE
 
     def on_ping(self, e, msg, c, bot):
         """Checks if the bot is alive"""

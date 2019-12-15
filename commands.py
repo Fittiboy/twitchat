@@ -1,7 +1,9 @@
 import functools
 from datetime import datetime
 import shelve
+
 from get_user_info import get_uid
+from duckduckgo_abstract import abstract
 
 def exec(_commands):
     def exec_decorator(func):
@@ -79,7 +81,8 @@ class Commands:
     def on_abstract(self, e, msg, c, bot):
         """Tries to find basic information on search term
         using the duckduckgo.com search engine"""
-        pass
+        term = " ".join(msg[1:])
+        c.privmsg(bot.channel, abstract(term))
 
     @check_permissions
     @update_cooldown(cooldown=30)

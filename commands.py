@@ -18,17 +18,17 @@ def exec(_commands):
         return exec_wrapper
     return exec_decorator
 
-# Add commands as methods
 class Commands:
+    """Add all commands as methods to this class"""
     def __init__(self):
         self.cooldowns = {}
 
-    # Gets called when a command is not recognized
     def do_nothing(*args, **kwargs):
-        return None
+        """Gets called when a command is not recognized"""
+        pass
 
-    # Use this decorator to add a cooldown to a command
     def update_cooldown(cooldown):
+        """Use this decorator to add a cooldown to a command"""
         def cooldown_decorator(func):
             @functools.wraps(func)
             def cooldown_wrapper(*args, **kwargs):
@@ -42,8 +42,8 @@ class Commands:
             return cooldown_wrapper
         return cooldown_decorator
 
-    # Use this decorator to add permissions to a command
     def check_permissions(func):
+        """Use this decorator to add a permission check to a command"""
         @functools.wraps(func)
         def permissions_wrapper(*args, **kwargs):
             uid = [dict['value'] for dict in args[1].tags if dict['key'] == 'user-id'][0]
@@ -71,20 +71,26 @@ class Commands:
         return permissions_wrapper
 
 
-    # Not to confuse with the IRC ping event
     def on_ping(self, e, msg, c, bot):
+        """Checks if the bot is alive"""
         c.privmsg(bot.channel, 'pong')
+
+    @update_cooldown(cooldown=10)
+    def on_abstract(self, e, msg, c, bot):
+        """Tries to find basic information on search term
+        using the duckduckgo.com search engine"""
 
     @check_permissions
     @update_cooldown(cooldown=30)
     def on_raid(self, e, msg, c, bot):
+        # You can do an automatic shoutout for the raiding streamer here
         print("raid")
 
     @check_permissions
     def on_permissions(self, e, msg, c, bot):
         """Usage: !permissions add/remove command user/badge
-        {username}/{badgename} {badge_value}
-        you can check the badges at api.twitch.tv"""
+        {username}/{badgename badge_value}
+        you can check some possible badges at api.twitch.tv"""
         db = shelve.open('database')
         perms = db['permissions']
         if len(msg) >= 4:
@@ -124,14 +130,13 @@ class Commands:
         db['permissions'] = perms
         db.close()
 
-
-    '''A test function for you to check
-    if your bot works. Remember to add
-    your user-id to the dictionary in
-    permissions.py'''
     @check_permissions
     @update_cooldown(cooldown=3)
     def on_test(self, e, msg, c, bot):
+        """A test function for you to check
+        if your bot works. Remember to add
+        your user-id to the dictionary in
+        permissions.py"""
         c.privmsg(bot.channel, 'passed')
 
 

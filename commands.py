@@ -79,6 +79,7 @@ class Commands:
     def on_abstract(self, e, msg, c, bot):
         """Tries to find basic information on search term
         using the duckduckgo.com search engine"""
+        pass
 
     @check_permissions
     @update_cooldown(cooldown=30)

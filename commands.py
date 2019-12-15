@@ -1,6 +1,6 @@
 import functools
 from datetime import datetime
-import shelve
+import json
 
 from get_user_info import get_uid
 from duckduckgo_abstract import abstract
@@ -55,11 +55,10 @@ class Commands:
 
             badges = {badge_list[0]:badge_list[1] for badge_list in badges_lists_list}
 
-            db = shelve.open('database')
-            perms = db['permissions']
+            with open('permissions.json') as perms_file:
+                perms = json.load(perms_file)
             perm_uids = perms[func.__name__]['uids']
             perm_badges = perms[func.__name__]['badges']
-            db.close()
             permitted = False
             if uid in perm_uids:
                 permitted = True
@@ -96,18 +95,21 @@ class Commands:
         """Usage: !permissions add/remove command user/badge
         {username}/{badgename badge_value}
         you can check some possible badges at api.twitch.tv"""
-        db = shelve.open('database')
-        perms = db['permissions']
+        with open("permissions.json") as perms_file:
+            perms = json.load(perms_file)
+
         if len(msg) >= 4:
-            aor = msg[1]
-            cmd = msg[2]
-            tp = msg[3]
+            aor = msg[1] # (a)dd (o)r (r)emove
+            cmd = msg[2] # (c)o(m)man(d)
+            tp = msg[3] # (t)y(p)e
         else:
             return
+
         cmd_perms = perms.get(f'on_{cmd}', None)
+
         if cmd_perms == None:
-            newperms = {'uids': [], 'badges': {}}
-            cmd_perms = newperms
+            cmd_perms = {'uids': [], 'badges': {}}
+
         if tp == "user" and len(msg) == 5:
             user = msg[4]
             uid = get_uid(bot.client_id, user)
@@ -132,8 +134,8 @@ class Commands:
                 c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
                     no longer use !{cmd}")
         perms[f'on_{cmd}'] = cmd_perms
-        db['permissions'] = perms
-        db.close()
+        with open('permissions.json', 'w') as perms_file:
+            json.dump(perms, perms_file)
 
     @check_permissions
     @update_cooldown(cooldown=3)

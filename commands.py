@@ -5,6 +5,7 @@ import json
 from get_user_info import get_uid
 from duckduckgo_abstract import abstract
 
+
 def exec(_commands):
     def exec_decorator(func):
         @functools.wraps(func)
@@ -19,6 +20,7 @@ def exec(_commands):
             method(e, msg, c, bot)
         return exec_wrapper
     return exec_decorator
+
 
 class Commands:
     """Add all commands as methods to this class"""
@@ -48,12 +50,15 @@ class Commands:
         """Use this decorator to add a permission check to a command"""
         @functools.wraps(func)
         def permissions_wrapper(*args, **kwargs):
-            uid = [dict['value'] for dict in args[1].tags if dict['key'] == 'user-id'][0]
-            badges_tag = [dict['value'] for dict in args[1].tags if dict['key'] == 'badges']
+            uid = [dict['value'] for dict in args[1].tags
+                   if dict['key'] == 'user-id'][0]
+            badges_tag = [dict['value'] for dict in args[1].tags
+                          if dict['key'] == 'badges']
             badges_list = badges_tag[0].split(",")
             badges_lists_list = [badge.split("/") for badge in badges_list]
 
-            badges = {badge_list[0]:badge_list[1] for badge_list in badges_lists_list}
+            badges = {badge_list[0]: badge_list[1] for badge_list
+                      in badges_lists_list}
 
             with open('permissions.json') as perms_file:
                 perms = json.load(perms_file)
@@ -67,7 +72,7 @@ class Commands:
                     if perm_badges.get(badge, "not_permitted") == value:
                         permitted = True
 
-            if permitted == True:
+            if permitted is True:
                 func(*args, **kwargs)
         return permissions_wrapper
 
@@ -99,15 +104,15 @@ class Commands:
             perms = json.load(perms_file)
 
         if len(msg) >= 4:
-            aor = msg[1] # (a)dd (o)r (r)emove
-            cmd = msg[2] # (c)o(m)man(d)
-            tp = msg[3] # (t)y(p)e
+            aor = msg[1]  # (a)dd (o)r (r)emove
+            cmd = msg[2]  # (c)o(m)man(d)
+            tp = msg[3]  # (t)y(p)e
         else:
             return
 
         cmd_perms = perms.get(f'on_{cmd}', None)
 
-        if cmd_perms == None:
+        if cmd_perms is None:
             cmd_perms = {'uids': [], 'badges': {}}
 
         if tp == "user" and len(msg) == 5:

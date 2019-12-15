@@ -2,7 +2,7 @@ import irc.bot
 import requests
 import time
 import commands
-import shelve
+import json
 
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel, keepalive=30):
@@ -63,14 +63,13 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         return e, c, self
 
 def main():
-    db = shelve.open('database')
-    tkns = db['tokens']['twitch']
-    username = tkns['username']
-    client_id = tkns['client_id']
-    token =  tkns['token']
-    channel = tkns['channel']
-    keepalive = tkns['keepalive']
-    db.close()
+    with open('settings.json') as settings_file:
+        settings = json.load(settings_file)
+    username = settings['username']
+    client_id = settings['client_id']
+    token =  settings['token']
+    channel = settings['channel']
+    keepalive = settings['keepalive']
 
     bot = TwitchBot(username, client_id, token, channel, keepalive)
     bot.start()

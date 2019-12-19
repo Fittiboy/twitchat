@@ -62,26 +62,33 @@ class Commands:
 
             with open('permissions.json') as perms_file:
                 perms = json.load(perms_file)
-            perm_uids = perms[func.__name__]['uids']
-            perm_badges = perms[func.__name__]['badges']
-            permitted = False
-            if uid in perm_uids:
-                permitted = True
-            else:
-                for badge, value in badges.items():
-                    if perm_badges.get(badge, "not_permitted") == value:
-                        permitted = True
+            func_perms = perms.get(func.__name__)
+            if func_perms:
+                perm_uids = func_perms.get('uids')
+                perm_badges = func_perms.get('badges')
+                permitted = False
+                if uid in perm_uids:
+                    permitted = True
+                else:
+                    for badge, value in badges.items():
+                        if perm_badges.get(badge, "not_permitted") == value:
+                            permitted = True
 
-            if permitted is True:
-                func(*args, **kwargs)
+                if permitted is True:
+                    func(*args, **kwargs)
+            else:
+                permitted = True
+
         return permissions_wrapper
 
     # ACTUAL COMMANDS GO HERE
-
+    @check_permissions
+    @update_cooldown(cooldown=0)
     def on_ping(self, e, msg, c, bot):
         """Checks if the bot is alive"""
         c.privmsg(bot.channel, 'pong')
 
+    @check_permissions
     @update_cooldown(cooldown=10)
     def on_abstract(self, e, msg, c, bot):
         """Tries to find basic information on search term
@@ -90,12 +97,7 @@ class Commands:
         c.privmsg(bot.channel, abstract(term))
 
     @check_permissions
-    @update_cooldown(cooldown=30)
-    def on_raid(self, e, msg, c, bot):
-        # You can do an automatic shoutout for the raiding streamer here
-        print("raid")
-
-    @check_permissions
+    @update_cooldown(cooldown=0)
     def on_permissions(self, e, msg, c, bot):
         """Usage: !permissions add/remove command user/badge
         {username}/{badgename badge_value}
@@ -131,13 +133,13 @@ class Commands:
             value = msg[5]
             if aor == "add":
                 cmd_perms['badges'][badge] = value
-                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
-                    now use !{cmd}")
+                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can" +
+                                       f"now use !{cmd}")
             if aor == "remove":
                 if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
-                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can \
-                    no longer use !{cmd}")
+                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can" +
+                                       f"no longer use !{cmd}")
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file)

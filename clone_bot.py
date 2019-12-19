@@ -19,9 +19,8 @@ except FileExistsError:
 # make sure to set the correct verison of python
 shell_script = """#!/bin/sh
 bash venv/bin/activate
-alias python=python3.8
-python -m pip install requests irc
-python settings.py
+python3.8 -m pip install requests irc
+python3.8 settings.py
 rm setup.sh""".format(path=path)
 
 for file in filelist:

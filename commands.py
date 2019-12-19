@@ -31,7 +31,7 @@ class Commands:
         """Gets called when a command is not recognized"""
         pass
 
-    def update_cooldown(cooldown):
+    def check_cooldown(cooldown):
         """Use this decorator to add a cooldown to a command"""
         def cooldown_decorator(func):
             @functools.wraps(func)
@@ -83,13 +83,13 @@ class Commands:
 
     # ACTUAL COMMANDS GO HERE
     @check_permissions
-    @update_cooldown(cooldown=0)
+    @check_cooldown(cooldown=0)
     def on_ping(self, e, msg, c, bot):
         """Checks if the bot is alive"""
         c.privmsg(bot.channel, 'pong')
 
     @check_permissions
-    @update_cooldown(cooldown=10)
+    @check_cooldown(cooldown=10)
     def on_abstract(self, e, msg, c, bot):
         """Tries to find basic information on search term
         using the duckduckgo.com search engine"""
@@ -97,7 +97,7 @@ class Commands:
         c.privmsg(bot.channel, abstract(term))
 
     @check_permissions
-    @update_cooldown(cooldown=0)
+    @check_cooldown(cooldown=0)
     def on_permissions(self, e, msg, c, bot):
         """Usage: !permissions add/remove command user/badge
         {username}/{badgename badge_value}
@@ -133,19 +133,19 @@ class Commands:
             value = msg[5]
             if aor == "add":
                 cmd_perms['badges'][badge] = value
-                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can" +
-                                       f"now use !{cmd}")
+                c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
+                                       f" badge can now use !{cmd}")
             if aor == "remove":
                 if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
-                c.privmsg(bot.channel, f"Users with the {badge}/{value} badge can" +
-                                       f"no longer use !{cmd}")
+                c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
+                                       f" badge can no longer use !{cmd}")
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file)
 
     @check_permissions
-    @update_cooldown(cooldown=3)
+    @check_cooldown(cooldown=3)
     def on_test(self, e, msg, c, bot):
         """A test function for you to check
         if your bot works. Remember to add

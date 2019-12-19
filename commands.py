@@ -107,6 +107,15 @@ class Commands:
 
     @check_permissions
     @check_cooldown(cooldown=0)
+    def on_channel(self, e, msg, c, bot):
+        if len(msg) > 1:
+            channel = msg[1]
+            bot.channel = "#" + channel
+            c.disconnect()
+            bot.start()
+
+    @check_permissions
+    @check_cooldown(cooldown=0)
     def on_permissions(self, e, msg, c, bot):
         """Usage: !permissions add/remove command user/badge/all
         {username}/{badgename badge_value}

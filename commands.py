@@ -98,8 +98,9 @@ class Commands:
     def on_abstract(self, e, msg, c, bot):
         """Tries to find basic information on search term
         using the duckduckgo.com search engine"""
-        term = " ".join(msg[1:])
-        c.privmsg(bot.channel, abstract(term))
+        if len(msg) > 1:
+            term = " ".join(msg[1:])
+            c.privmsg(bot.channel, abstract(term))
 
     @check_permissions
     @check_cooldown(cooldown=0)

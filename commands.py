@@ -144,14 +144,5 @@ class Commands:
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file)
 
-    @check_permissions
-    @check_cooldown(cooldown=3)
-    def on_test(self, e, msg, c, bot):
-        """A test function for you to check
-        if your bot works. Remember to add
-        your user-id to the dictionary in
-        permissions.py"""
-        c.privmsg(bot.channel, 'passed')
-
 
 commands = Commands()

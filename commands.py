@@ -55,7 +55,8 @@ class Commands:
             badges_tag = [dict['value'] for dict in args[1].tags
                           if dict['key'] == 'badges']
             badges_list = badges_tag[0].split(",")
-            badges_lists_list = [badge.split("/") for badge in badges_list]
+            badges_lists_list = [badge.split("/") for badge in badges_list
+                                 if badge]
 
             badges = {badge_list[0]: badge_list[1] for badge_list
                       in badges_lists_list}

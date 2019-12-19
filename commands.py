@@ -81,7 +81,7 @@ class Commands:
 
         return permissions_wrapper
 
-    # ACTUAL COMMANDS GO HERE
+    # STOCK COMMANDS
     @check_permissions
     @check_cooldown(cooldown=0)
     def on_ping(self, e, msg, c, bot):
@@ -143,6 +143,12 @@ class Commands:
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file)
+
+    '''Add your custom commands below this comment, like this:
+    @check_permissions
+    @check_cooldown(cooldown=0)
+    def on_testcomm(self, e, msg, c, bot):
+        c.privmsg(bot.channel, "This is just a test command!")'''
 
 
 commands = Commands()

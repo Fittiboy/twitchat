@@ -63,11 +63,18 @@ class Commands:
             with open('permissions.json') as perms_file:
                 perms = json.load(perms_file)
             func_perms = perms.get(func.__name__)
+
+            if not func_perms:
+                perms[func.__name__] = {'all': "1", 'uids': [], 'badges': {}}
+                with open('permissions.json', 'w') as perms_file:
+                    json.dump(perms, perms_file)
+
             if func_perms:
                 perm_uids = func_perms.get('uids')
                 perm_badges = func_perms.get('badges')
+                perm_all = func_perms.get('all')
                 permitted = False
-                if uid in perm_uids:
+                if uid in perm_uids or perm_all == "1":
                     permitted = True
                 else:
                     for badge, value in badges.items():
@@ -76,8 +83,6 @@ class Commands:
 
                 if permitted is True:
                     func(*args, **kwargs)
-            else:
-                permitted = True
 
         return permissions_wrapper
 
@@ -99,7 +104,7 @@ class Commands:
     @check_permissions
     @check_cooldown(cooldown=0)
     def on_permissions(self, e, msg, c, bot):
-        """Usage: !permissions add/remove command user/badge
+        """Usage: !permissions add/remove command user/badge/all
         {username}/{badgename badge_value}
         you can check some possible badges at api.twitch.tv"""
         with open("permissions.json") as perms_file:
@@ -115,7 +120,7 @@ class Commands:
         cmd_perms = perms.get(f'on_{cmd}', None)
 
         if cmd_perms is None:
-            cmd_perms = {'uids': [], 'badges': {}}
+            cmd_perms = {'all': "0", 'uids': [], 'badges': {}}
 
         if tp == "user" and len(msg) == 5:
             user = msg[4]
@@ -135,11 +140,21 @@ class Commands:
                 cmd_perms['badges'][badge] = value
                 c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
                                        f" badge can now use !{cmd}")
-            if aor == "remove":
+            elif aor == "remove":
                 if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
                                        f" badge can no longer use !{cmd}")
+        elif tp == "all":
+            if aor == "add":
+                cmd_perms['all'] = "1"
+                c.privmsg(bot.channel, f"All users can now use" +
+                                       f" !{cmd}")
+            elif aor == "remove":
+                cmd_perms['all'] = "0"
+                c.privmsg(bot.channel, f"The !{cmd} command is no" +
+                                       f" longer available to all users")
+
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file)

@@ -21,4 +21,5 @@ for file in filelist:
 
 venv.create(path + "/venv", system_site_packages=True, with_pip=True)
 
-print("Make sure to run 'python -m pip install requests irc' in your venv")
+print("Make sure to run 'python -m pip install requests irc' in your venv\n" +
+      "To set up your bot, run settings.py")

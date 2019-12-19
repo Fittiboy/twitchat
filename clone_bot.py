@@ -3,7 +3,7 @@ from os import mkdir
 from shutil import copy
 import json
 import venv
-from subprocess import call
+
 
 with open("files_to_copy.json") as files_file:
     filelist = json.load(files_file)
@@ -16,10 +16,11 @@ try:
 except FileExistsError:
     pass
 
+# make sure to alias python to python[current_version]
 shell_script = """#!/bin/sh
 bash venv/bin/activate
-python3 -m pip install requests irc
-python3 settings.py
+python -m pip install requests irc
+python settings.py
 rm setup.sh""".format(path=path)
 
 for file in filelist:

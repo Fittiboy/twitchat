@@ -110,6 +110,7 @@ class Commands:
     def on_channel(self, e, msg, c, bot):
         if len(msg) > 1:
             channel = msg[1]
+            c.privmsg(bot.channel, f"Heading over to {channel}!")
             bot.channel = "#" + channel
             c.disconnect()
             bot.start()

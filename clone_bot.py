@@ -16,9 +16,10 @@ try:
 except FileExistsError:
     pass
 
-# make sure to alias python to python[current_version]
+# make sure to set the correct verison of python
 shell_script = """#!/bin/sh
 bash venv/bin/activate
+alias python=python3.8
 python -m pip install requests irc
 python settings.py
 rm setup.sh""".format(path=path)

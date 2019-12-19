@@ -17,10 +17,10 @@ except FileExistsError:
     pass
 
 shell_script = """#!/bin/sh
-cd {path}
 bash venv/bin/activate
 python3 -m pip install requests irc
-python3 settings.py""".format(path=path)
+python3 settings.py
+rm setup.sh""".format(path=path)
 
 for file in filelist:
     copy(f"./{file}", path + file)
@@ -29,5 +29,3 @@ with open(path + "setup.sh", "w") as setup_sh:
     setup_sh.write(shell_script)
 
 venv.create(path + "/venv", system_site_packages=True)
-
-call(path + "setup.sh")

@@ -37,6 +37,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         c.cap('REQ', ':twitch.tv/commands')
         c.join(self.channel)
         c.set_keepalive(self.keepalive)
+        c.privmsg(self.channel, "I am here now :)")
         self.reconnect = 1
 
     def on_reconnect(self, c, e):

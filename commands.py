@@ -111,7 +111,7 @@ class Commands:
         if len(msg) > 1:
             channel = msg[1]
             c.privmsg(bot.channel, f"Heading over to {channel}!")
-            bot.channel = "#" + channel
+            bot.channel = "#" + channel.lower()
             c.disconnect()
             bot.start()
 

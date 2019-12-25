@@ -70,7 +70,7 @@ class Commands:
             if not func_perms:
                 perms[func.__name__] = {'all': "1", 'uids': [], 'badges': {}}
                 with open('permissions.json', 'w') as perms_file:
-                    json.dump(perms, perms_file)
+                    json.dump(perms, perms_file, indent=4)
 
             if func_perms:
                 perm_uids = func_perms.get('uids')
@@ -171,7 +171,7 @@ class Commands:
 
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
-            json.dump(perms, perms_file)
+            json.dump(perms, perms_file, indent=4)
 
     '''Add your custom commands below this comment, like this:
     @check_permissions

@@ -1,1 +1,7 @@
-{"username": "UNAME", "client_id": "CID", "token": "TKN", "channel": "CHNL", "keepalive": 300}
+{
+    "username": "UNAME",
+    "client_id": "CID",
+    "token": "TKN",
+    "channel": "CHNL",
+    "keepalive": 300
+}

@@ -1,1 +1,14 @@
-{"on_permissions": {"all": "0", "uids": [], "badges": {"broadcaster": "1"}}, "on_channel": {"all": "0", "uids": [], "badges": {}}}
+{
+    "on_permissions": {
+        "all": "0",
+        "uids": [],
+        "badges": {
+            "broadcaster": "1"
+        }
+    },
+    "on_channel": {
+        "all": "0",
+        "uids": [],
+        "badges": {}
+    }
+}

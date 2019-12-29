@@ -40,7 +40,11 @@ class Commands:
                 if last_used:
                     used_diff = datetime.now() - last_used
                     if used_diff.seconds < cooldown:
-                        return
+                        self, e, msg, c, bot = args
+                        cmd  = msg[0][1:]
+                        current_cd = cooldown - used_diff.seconds
+                        c.privmsg(bot.channel, f"{cmd} is still on" +
+                                  f" a {current_cd} second cooldown!")
                 commands.cooldowns[func.__name__] = datetime.now()
                 func(*args, **kwargs)
             return cooldown_wrapper

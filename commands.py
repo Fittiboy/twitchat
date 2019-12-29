@@ -45,6 +45,7 @@ class Commands:
                         current_cd = cooldown - used_diff.seconds
                         c.privmsg(bot.channel, f"{cmd} is still on" +
                                   f" a {current_cd} second cooldown!")
+                        return
                 commands.cooldowns[func.__name__] = datetime.now()
                 func(*args, **kwargs)
             return cooldown_wrapper

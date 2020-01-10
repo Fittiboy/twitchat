@@ -143,7 +143,10 @@ class Commands:
 
         if tp == "user" and len(msg) == 5:
             user = msg[4]
-            uid = get_uid(bot.client_id, user)
+            try:
+                uid = get_uid(bot.client_id, user)
+            except:
+                return
             if aor == "add":
                 if uid not in cmd_perms['uids']:
                     cmd_perms['uids'].append(uid)

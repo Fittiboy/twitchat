@@ -15,7 +15,7 @@ def exec(_commands):
             if len(msg[0]) == 1:
                 return
             cmd = msg[0][1:]
-            cmd_func_name = f"on_{cmd}"
+            cmd_func_name = f"on_{cmd}".lower()
             method = getattr(_commands, cmd_func_name, _commands.do_nothing)
             method(e, msg, c, bot)
         return exec_wrapper

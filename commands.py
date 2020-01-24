@@ -73,7 +73,16 @@ class Commands:
             func_perms = perms.get(func.__name__)
 
             if not func_perms:
-                perms[func.__name__] = {'all': "1", 'uids': [], 'badges': {}}
+                perms[func.__name__] = {
+                    'all': "1",
+                    'uids': [],
+                    'badges': {},
+                    'forbid': {
+                        'all': "0",
+                        'uids': [],
+                        'badges': {}
+                        }
+                    }
                 with open('permissions.json', 'w') as perms_file:
                     json.dump(perms, perms_file, indent=4)
 
@@ -81,15 +90,31 @@ class Commands:
                 perm_uids = func_perms.get('uids')
                 perm_badges = func_perms.get('badges')
                 perm_all = func_perms.get('all')
+                perm_forbid = func_perms.get('forbid')
                 permitted = False
-                if uid in perm_uids or perm_all == "1":
+                if uid in perm_uids and uid not in perm_forbid['uids']
                     permitted = True
-                else:
-                    for badge, value in badges.items():
-                        if perm_badges.get(badge, "not_permitted") == value:
-                            permitted = True
 
-                if permitted is True:
+                if uid in perm_forbid['uids']:
+                    permitted = False
+
+                if perm_all == "1" and perm_forbid['all'] != "1":
+                    permitted = True
+
+                if perm_forbid['all'] == "1":
+                    premitted = False
+
+                elif permitted:
+                    for badge, value in badges.items():
+                        if perm_badges.get(badge) == value:
+                            permitted = True
+                            break
+                    for badge, value in badges.items():
+                        if perm_forbid['badges'].get(badge) == value:
+                            permitted = False
+                            break
+
+                if permitted:
                     func(*args, **kwargs)
 
         return permissions_wrapper
@@ -123,14 +148,14 @@ class Commands:
     @check_permissions
     @check_cooldown(cooldown=0)
     def on_permissions(self, e, msg, c, bot):
-        """Usage: !permissions add/remove command user/badge/all
+        """Usage: !permissions add/remove/forbid command user/badge/all
         {username}/{badgename badge_value}
         you can check some possible badges at api.twitch.tv"""
         with open("permissions.json") as perms_file:
             perms = json.load(perms_file)
 
         if len(msg) >= 4:
-            aor = msg[1]  # (a)dd (o)r (r)emove
+            arf = msg[1]  # (a)dd (r)emove (f)orbid
             cmd = msg[2]  # (c)o(m)man(d)
             tp = msg[3]  # (t)y(p)e
         else:
@@ -139,43 +164,90 @@ class Commands:
         cmd_perms = perms.get(f'on_{cmd}', None)
 
         if cmd_perms is None:
-            cmd_perms = {'all': "0", 'uids': [], 'badges': {}}
+            cmd_perms = {
+                'all': "0",
+                'uids': [],
+                'badges': {},
+                'forbid': {
+                    'all' = "0",
+                    'uids' = [],
+                    'badges' = {}
+                    }
+                }
 
         if tp == "user" and len(msg) == 5:
             user = msg[4]
+
             try:
                 uid = get_uid(bot.client_id, user)
             except:
                 return
-            if aor == "add":
+
+            if arf == "add":
                 if uid not in cmd_perms['uids']:
                     cmd_perms['uids'].append(uid)
+
+                if uid in cmd_perms['forbid']['uids']:
+                    cmd_perms['forbid']['uids'].remove(uid)
+
                 c.privmsg(bot.channel, f"{user} can now use !{cmd}")
-            elif aor == "remove":
+
+            elif arf == "remove":
                 if uid in cmd_perms['uids']:
                     cmd_perms['uids'].remove(uid)
+
                 c.privmsg(bot.channel, f"{user} can no longer use !{cmd}")
+                
+            elif arf == "forbid":
+                if uid not in cmd_perms['forbid']['uids']:
+                    cmd_perms['forbid']['uids'].append(uid)
+
+                if uid in cmd_perms['uids']:
+                    cmd_perms['uids'].remove(uid)
+
+                c.privmsg(bot.channel, f"{user} is no longer allowed " +
+                                       f"to use !{cmd}")
+
         elif tp == "badge" and len(msg) == 6:
             badge = msg[4]
             value = msg[5]
-            if aor == "add":
+
+            if arf == "add":
                 cmd_perms['badges'][badge] = value
+                if cmd_perms['forbid']['badges'].get(badge) == value:
+                    del cmd_perms['forbid']['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
                                        f" badge can now use !{cmd}")
-            elif aor == "remove":
+
+            elif arf == "remove":
                 if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
                                        f" badge can no longer use !{cmd}")
+
+            elif arf == "forbid":
+                cmd_perms['forbid']['badges'][badge] = value
+                if cmd_perms['badges'].get(badge) == value:
+                    del cmd_perms['badges'][badge]
+                c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
+                                       f" badge are not allowed to use " +
+                                       f"!{cmd}")
+
         elif tp == "all":
-            if aor == "add":
+            if arf == "add":
                 cmd_perms['all'] = "1"
+                cmd_perms['forbid']['all'] = "0"
                 c.privmsg(bot.channel, f"All users can now use" +
                                        f" !{cmd}")
-            elif aor == "remove":
+            elif arf == "remove":
                 cmd_perms['all'] = "0"
                 c.privmsg(bot.channel, f"The !{cmd} command is no" +
                                        f" longer available to all users")
+
+            elif arf == "forbid":
+                cmd_perms['forbid']['all'] = "1"
+                cmd_perms['all'] = "0"
+                c.privmsg(bot.channel, f"No user is allowed to use !{cmd}")
 
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:

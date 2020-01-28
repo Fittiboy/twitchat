@@ -16,8 +16,11 @@ def exec(_commands):
                 return
             cmd = msg[0][1:]
             cmd_func_name = f"on_{cmd}".lower()
-            method = getattr(_commands, cmd_func_name, _commands.do_nothing)
-            method(e, msg, c, bot)
+            method = getattr(_commands, cmd_func_name, _commands.extra)
+            if method.__name__ != "extra":
+                method(e, msg, c, bot)
+            else:
+                method(e, msg, c, bot, cmd_func_name)
         return exec_wrapper
     return exec_decorator
 
@@ -27,8 +30,8 @@ class Commands:
     def __init__(self):
         self.cooldowns = {}
 
-    def do_nothing(*args, **kwargs):
-        """Gets called when a command is not recognized"""
+    def extra(self, e, msg, c, bot, cmd_name):
+        """For executing simple commands added during runtime"""
         pass
 
     def check_cooldown(cooldown):

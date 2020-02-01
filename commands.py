@@ -20,7 +20,7 @@ def exec(_commands):
             if method.__name__ != "extra":
                 method(e, msg, c, bot)
             else:
-                method(e, msg, c, bot, cmd_func_name)
+                method(e, msg, c, bot, cmd_func_name, *args)
         return exec_wrapper
     return exec_decorator
 
@@ -30,13 +30,13 @@ class Commands:
     def __init__(self):
         self.cooldowns = {}
 
-    def extra(self, e, msg, c, bot, cmd_name):
+    def extra(self, e, msg, c, bot, cmd_name, *args):
         """For executing simple commands added during runtime"""
         with open("extra_commands.json") as command_dict_file:
             command_dict = json.read(command_dict_file)
         command = command_dict.get(cmd_name)
-        if command:
-            extra_message =  ""            
+        if command and len(args) >= command["args"]:
+            extra_message = command["text"].format(*args)
             check_permissions(check_cooldown(cooldown=5)(self.print_extra(e,
                 msg, c, bot, extra_message)))
 
@@ -105,7 +105,7 @@ class Commands:
                 perm_all = func_perms.get('all')
                 perm_forbid = func_perms.get('forbid')
                 permitted = False
-                if uid in perm_uids and uid not in perm_forbid['uids']
+                if uid in perm_uids and uid not in perm_forbid['uids']:
                     permitted = True
 
                 if uid in perm_forbid['uids']:
@@ -182,9 +182,9 @@ class Commands:
                 'uids': [],
                 'badges': {},
                 'forbid': {
-                    'all' = "0",
-                    'uids' = [],
-                    'badges' = {}
+                    'all': "0",
+                    'uids': [],
+                    'badges': {}
                     }
                 }
 

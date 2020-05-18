@@ -1,6 +1,0 @@
-extra_commands = {
-    "testcomm": {
-        "text": "This is a test: {}, {}, {}",
-        "args": 3
-    }
-}

@@ -2,6 +2,7 @@ import irc.bot
 import requests
 import time
 import commands
+from importlib import reload
 import json
 
 
@@ -59,6 +60,9 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         """Tries to execute command if message begins with '!'"""
         if e.arguments[0][0] == "!":
             self.exec_command(c, e)
+            if e.arguments[0] == "!commadd":
+                global commands
+                commands = reload(commands)
 
     @commands.exec(commands.commands)
     def exec_command(self, c, e):

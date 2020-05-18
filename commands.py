@@ -30,20 +30,6 @@ class Commands:
     def __init__(self):
         self.cooldowns = {}
 
-    def extra(self, e, msg, c, bot, cmd_name, *args):
-        """For executing simple commands added during runtime"""
-        with open("extra_commands.json") as command_dict_file:
-            command_dict = json.read(command_dict_file)
-        command = command_dict.get(cmd_name)
-        if command and len(args) >= command["args"]:
-            extra_message = command["text"].format(*args)
-            check_permissions(check_cooldown(cooldown=5)(self.print_extra(e,
-                msg, c, bot, extra_message)))
-
-    def print_extra(self, e, msg, c, bot):
-        """Called to run the commands handled by extra()"""
-        c.privmsg(bot.channel, extra_message) 
-
     def check_cooldown(cooldown):
         """Use this decorator to add a cooldown to a command"""
         def cooldown_decorator(func):

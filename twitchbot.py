@@ -62,11 +62,12 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         """Tries to execute command if message begins with '!'"""
         if e.arguments[0][0] == "!":
             global cmd_obj
-            self.exec_command(c, e, cmd_obj)
-            if e.arguments[0] == "!commadd":
+            if e.arguments[0] == "!reload":
                 global commands
                 commands = reload(commands)
                 cmd_obj = commands.Commands()
+            else:
+                self.exec_command(c, e, cmd_obj)
 
     @commands.exec
     def exec_command(self, c, e, cmd_obj):

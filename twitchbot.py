@@ -2,9 +2,11 @@ import irc.bot
 import requests
 import time
 import commands
-from importlib import reload
 import json
+from importlib import reload
 
+
+cmd_obj = commands.Commands()
 
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel, keepalive=30):
@@ -59,16 +61,18 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
     def on_pubmsg(self, c, e):
         """Tries to execute command if message begins with '!'"""
         if e.arguments[0][0] == "!":
-            self.exec_command(c, e)
+            global cmd_obj
+            self.exec_command(c, e, cmd_obj)
             if e.arguments[0] == "!commadd":
                 global commands
                 commands = reload(commands)
+                cmd_obj = commands.Commands()
 
-    @commands.exec(commands.commands)
-    def exec_command(self, c, e):
+    @commands.exec
+    def exec_command(self, c, e, cmd_obj):
         """Check if command exists and checks for possible cooldown,
         then executes if possible"""
-        return e, c, self
+        return e, c, self, cmd_obj
 
 
 def main():

@@ -1,0 +1,1 @@
+template = "    @check_permissions\n    @check_cooldown(cooldown={cdwn})\n    def on_{cmdname}(self, e, msg, c, bot):\n        if len(msg) > {argnum}:\n            c.privmsg(bot.channel, \"{text}\"{formattext})\n\n"

@@ -69,11 +69,51 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
             else:
                 self.exec_command(c, e, cmd_obj)
 
+        else:
+            self.send_timers(self.timers(), c)
+
     @commands.exec
     def exec_command(self, c, e, cmd_obj):
         """Check if command exists and checks for possible cooldown,
         then executes if possible"""
         return e, c, self, cmd_obj
+
+    def timers(self):
+        now = nowfunc()
+        send = []
+        with open('timers.json') as timerfile:
+            timers = json.load(timerfile)
+        
+        for command, params in timers.items():
+            params['messages'] += 1
+            messages = params['messages']
+            messages_threshold = params['messages_threshold']
+            
+            time = params['time']
+            time_threshold = params['time_threshold']
+            if (now - time > time_threshold and
+                messages > messages_threshold):
+                params['messages'] = 0
+                params['time'] = now
+                send.append(command)
+
+            timers[command] = params
+
+        with open('timers.json.bak', 'w') as timerbackup:
+            json.dump(timers, timerbackup, indent=4)
+
+        with open('timers.json', 'w') as timerfile:
+            json.dump(timers, timerfile, indent=4)
+
+        return send
+
+    def send_timers(self, send, c):
+        with open('timers.json') as timerfile:
+            timers = json.load(timerfile)
+        for command in send:
+            name = timers[command]
+            c.privmsg(self.channel,
+                      name['post'])
 
 
 def main():

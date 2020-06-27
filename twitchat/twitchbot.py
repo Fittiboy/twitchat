@@ -2,7 +2,7 @@ import irc.bot
 import requests
 import time
 from time import time as nowfunc
-import commands
+import twitchat.commands as commands
 import json
 from importlib import reload
 

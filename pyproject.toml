@@ -21,3 +21,4 @@ keywords = "twitch, twitch.tv, chat bot, bot"
 
 [tool.flit.scripts]
 twitchat = "twitchbot:main"
+twitchat-settings = "settings:main"

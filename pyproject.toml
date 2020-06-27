@@ -20,5 +20,5 @@ description-file = "README.md"
 keywords = "twitch, twitch.tv, chat bot, bot"
 
 [tool.flit.scripts]
-twitchat = "twitchbot:main"
-twitchat-settings = "settings:main"
+twitchat = "twitchat.twitchbot:main"
+twitchat-settings = "twitchat.settings:main"

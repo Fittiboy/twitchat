@@ -1,3 +1,7 @@
+[![Documentation Status](https://readthedocs.org/projects/python-twitch-bot/badge/?version=latest)](https://docs.fitti.io/en/latest/?badge=latest)
+[![GitHub license](https://img.shields.io/github/license/fittiboy/twitchat)](https://github.com/Fittiboy/twitchat/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/twitchat.svg)](https://badge.fury.io/py/twitchat)
+      
 # Python Twitch Bot
 ## (Q: What is a "python"??)
 A: Go to [python.org](https://www.python.org/downloads) and download and install the latest version of python.<br>

@@ -1,5 +1,5 @@
 import json
-from twitchat import permissions
+from twitchat.permissions import permissions
 
 
 def main():

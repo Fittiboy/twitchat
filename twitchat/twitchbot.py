@@ -65,9 +65,21 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         if e.arguments[0][0] == "!":
             global cmd_obj
             if e.arguments[0] == "!reload":
-                global commands
-                commands = reload(commands)
-                cmd_obj = commands.Commands()
+                badges_tag = [dict['value'] for dict in e.tags
+                              if dict['key'] == 'badges']
+                badges_list = []
+                if badges_tag[0]:
+                    badges_list = badges_tag[0].split(",")
+                badges_lists_list = [badge.split("/") for badge in badges_list
+                                     if badge]
+
+                badges = {badge_list[0]: badge_list[1] for badge_list
+                          in badges_lists_list}
+                for badge, value in badges.items():
+                    if badge == "broadcaster" and value == "1":
+                        global commands
+                        commands = reload(commands)
+                        cmd_obj = commands.Commands()
             else:
                 self.exec_command(c, e, cmd_obj)
 

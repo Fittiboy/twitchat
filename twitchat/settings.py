@@ -1,6 +1,7 @@
 import json
 
-if __name__ == "__main__":
+
+def main():
     try:
         with open('settings.json') as settings_file:
             settings = json.load(settings_file)

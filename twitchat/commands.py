@@ -5,6 +5,8 @@ import json
 from twitchat.get_user_info import get_uid
 from twitchat.duckduckgo_abstract import abstract
 
+import extra_commands as ec
+
 
 def exec(func):
     @functools.wraps(func)
@@ -24,6 +26,12 @@ class Commands:
     """Add all commands as methods to this class"""
     def __init__(self):
         self.cooldowns = {}
+        for key, value in ec.__dict__.items():
+            if len(key) > 3 and key[:3] == "on_":
+                cd = value()
+                cooled = Commands.check_cooldown(cd)(value)
+                permitted = Commands.check_permissions(cooled)
+                self.__dict__[key] = permitted
 
     def check_cooldown(cooldown):
         """Use this decorator to add a cooldown to a command"""

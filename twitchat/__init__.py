@@ -2,4 +2,4 @@
 commands, to an extent that other bots don't allow."""
 # __init__.py
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"

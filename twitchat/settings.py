@@ -6,7 +6,7 @@ def main():
         with open('settings.json') as settings_file:
             settings = json.load(settings_file)
     except FileNotFoundError:
-        pass
+        settings = {}
     settings['username'] = input("Username: ")
     settings['client_id'] = input("Client-ID: ")
     settings['token'] = input("token: ")

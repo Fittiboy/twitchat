@@ -1,9 +1,9 @@
 {
     "test_timer": {
         "messages": 0,
-        "messages_threshold": 999999999999999999999,
-        "time": 300000,
-        "time_threshold": 300000000000000,
-        "post": "This will be sent in chat"
+        "messages_threshold": 0,
+        "time": 0,
+        "time_threshold": 0,
+        "post": "This is a test timer"
     }
 }

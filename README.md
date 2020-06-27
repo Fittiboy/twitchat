@@ -24,7 +24,7 @@ Here, you will have to enter the following:
 3. A corresponding oauth token (This can easily be acquired from [here](https://twitchapps.com/tmi); exclude the "oauth:" part)
 4. The channel you want the bot to connect to
 
-If you don't know what any of this means, I have a [guide](https://github.com/Fittiboy/python-twitch-bot#how-to-set-up-your-bot-account) prepared for you.
+If you don't know what any of this means, I have a [guide](#how-to-set-up-your-bot-account) prepared for you.
 
 Finally, create a script in the bot directory (or just run python):<br>
 ```python

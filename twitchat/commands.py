@@ -37,7 +37,7 @@ class Commands:
                     used_diff = datetime.now() - last_used
                     if used_diff.seconds < cooldown:
                         self, e, msg, c, bot = args
-                        cmd  = msg[0][1:]
+                        cmd = msg[0][1:]
                         current_cd = cooldown - used_diff.seconds
                         c.privmsg(bot.channel, f"{cmd} is still on" +
                                   f" a {current_cd} second cooldown!")
@@ -98,7 +98,7 @@ class Commands:
                     permitted = True
 
                 if perm_forbid['all'] == "1":
-                    premitted = False
+                    permitted = False
 
                 elif permitted:
                     for badge, value in badges.items():
@@ -176,7 +176,7 @@ class Commands:
 
             try:
                 uid = get_uid(bot.client_id, user)
-            except:
+            except Exception:
                 return
 
             if arf == "add":
@@ -193,7 +193,7 @@ class Commands:
                     cmd_perms['uids'].remove(uid)
 
                 c.privmsg(bot.channel, f"{user} can no longer use !{cmd}")
-                
+
             elif arf == "forbid":
                 if uid not in cmd_perms['forbid']['uids']:
                     cmd_perms['forbid']['uids'].append(uid)
@@ -226,19 +226,19 @@ class Commands:
                 if cmd_perms['badges'].get(badge) == value:
                     del cmd_perms['badges'][badge]
                 c.privmsg(bot.channel, f"Users with the {badge}/{value}" +
-                                       f" badge are not allowed to use " +
+                                       " badge are not allowed to use " +
                                        f"!{cmd}")
 
         elif tp == "all":
             if arf == "add":
                 cmd_perms['all'] = "1"
                 cmd_perms['forbid']['all'] = "0"
-                c.privmsg(bot.channel, f"All users can now use" +
+                c.privmsg(bot.channel, "All users can now use" +
                                        f" !{cmd}")
             elif arf == "remove":
                 cmd_perms['all'] = "0"
                 c.privmsg(bot.channel, f"The !{cmd} command is no" +
-                                       f" longer available to all users")
+                                       " longer available to all users")
 
             elif arf == "forbid":
                 cmd_perms['forbid']['all'] = "1"
@@ -252,7 +252,8 @@ class Commands:
     @check_permissions
     @check_cooldown(cooldown=0)
     def on_commadd(self, e, msg, c, bot):
-        """!commadd command cooldown(not required, default 30) text(including {args})"""
+        """!commadd command cooldown(not required, default 30)
+        text(including {args})"""
         if len(msg) > 2:
             with open("commands_backups/num.json") as backupnum_file:
                 backup_num = json.load(backupnum_file) + 1
@@ -272,7 +273,7 @@ class Commands:
             except ValueError:
                 cdwn = 30
                 commtext = msg[2:]
-            
+
             arguments = []
 
             for word in commtext:
@@ -285,7 +286,7 @@ class Commands:
             commtext = " ".join(commtext)
             argnum = len(arguments)
             formatlist = []
-            
+
             for index, arg in enumerate(arguments):
                 msg_index = index + 1
                 formatlist.append(f"{arg}=msg[{msg_index}]")
@@ -293,10 +294,11 @@ class Commands:
                 formatstring = ".format(" + ", ".join(formatlist) + ")"
             else:
                 formatstring = ""
-            
+
             template = comm_template.template
             full_command = template.format(cdwn=cdwn, cmdname=commname,
-                    argnum=argnum, text=commtext, formattext=formatstring)
+                                           argnum=argnum, text=commtext,
+                                           formattext=formatstring)
 
             with open("commands.py") as commandsfile:
                 lines = commandsfile.readlines()
@@ -306,11 +308,3 @@ class Commands:
 
             with open("commands.py", "w") as commandsfile:
                 commandsfile.write("".join(lines))
-
-    '''Add your custom commands below this comment, like this:
-    @check_permissions
-    @check_cooldown(cooldown=0)
-    def on_testcomm(self, e, msg, c, bot):
-        c.privmsg(bot.channel, "This is just a test command!")'''
-
-

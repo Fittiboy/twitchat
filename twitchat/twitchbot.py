@@ -9,6 +9,7 @@ from importlib import reload
 
 cmd_obj = commands.Commands()
 
+
 class TwitchBot(irc.bot.SingleServerIRCBot):
     def __init__(self, username, client_id, token, channel, keepalive=30):
         self.client_id = client_id
@@ -84,16 +85,16 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         send = []
         with open('timers.json') as timerfile:
             timers = json.load(timerfile)
-        
+
         for command, params in timers.items():
             params['messages'] += 1
             messages = params['messages']
             messages_threshold = params['messages_threshold']
-            
+
             time = params['time']
             time_threshold = params['time_threshold']
             if (now - time > time_threshold and
-                messages > messages_threshold):
+               messages > messages_threshold):
                 params['messages'] = 0
                 params['time'] = now
                 send.append(command)
@@ -128,7 +129,3 @@ def main():
 
     bot = TwitchBot(username, client_id, token, channel, keepalive)
     bot.start()
-
-
-if __name__ == "__main__":
-    main()

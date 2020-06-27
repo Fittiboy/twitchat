@@ -2,10 +2,10 @@ import functools
 from datetime import datetime
 import json
 from shutil import copyfile
-import comm_template
+from twitchat import comm_template
 
-from get_user_info import get_uid
-from duckduckgo_abstract import abstract
+from twitchat.get_user_info import get_uid
+from twitchat.duckduckgo_abstract import abstract
 
 
 def exec(func):
@@ -259,7 +259,7 @@ class Commands:
                 backup_num = json.load(backupnum_file) + 1
             with open("commands_backups/num.json", "w") as backupnum_file:
                 json.dump(backup_num, backupnum_file)
-            path = "commands_backups/commands_{backup_num}.py"
+            path = f"commands_backups/commands_{backup_num}.py"
             copyfile("commands.py", path)
 
             commname = msg[1][1:] if msg[1][0] == "!" else msg[1]

@@ -13,6 +13,7 @@ def exec(func):
     def exec_wrapper(*args, **kwargs):
         e, c, bot, cmd_obj = func(*args, **kwargs)
         msg = e.arguments[0].split(" ")
+        e.arguments[0] = cmd_obj
         if len(msg[0]) == 1:
             return
         cmd = msg[0][1:]
@@ -28,12 +29,12 @@ class Commands:
         self.cooldowns = {}
         for key, value in ec.__dict__.items():
             if len(key) > 3 and key[:3] == "on_":
-                cd = value()
+                cd = ec.cooldowns[key]
                 cooled = Commands.check_cooldown(cd)(value)
                 permitted = Commands.check_permissions(cooled)
                 self.__dict__[key] = permitted
 
-    def nothing(self):
+    def nothing(self, *args):
         pass
 
     def check_cooldown(cooldown):
@@ -60,6 +61,9 @@ class Commands:
         """Use this decorator to add a permission check to a command"""
         @functools.wraps(func)
         def permissions_wrapper(*args, **kwargs):
+            if len(args) == 4:
+                args = list(args)
+                args.insert(0, args[0].arguments[0])
             uid = [dict['value'] for dict in args[1].tags
                    if dict['key'] == 'user-id'][0]
             badges_tag = [dict['value'] for dict in args[1].tags
@@ -97,20 +101,22 @@ class Commands:
                 perm_all = func_perms.get('all')
                 perm_forbid = func_perms.get('forbid')
                 permitted = False
+                forbidden = False
                 if uid in perm_uids and uid not in perm_forbid['uids']:
                     permitted = True
 
                 if uid in perm_forbid['uids']:
-                    permitted = False
+                    forbidden = True
 
                 if perm_all == "1" and perm_forbid['all'] != "1":
                     permitted = True
 
                 if perm_forbid['all'] == "1":
-                    permitted = False
+                    forbidden = True
 
-                elif permitted:
+                elif not forbidden:
                     for badge, value in badges.items():
+                        print("Badge, value: ", badge, value)
                         if perm_badges.get(badge) == value:
                             permitted = True
                             break
@@ -119,7 +125,7 @@ class Commands:
                             permitted = False
                             break
 
-                if permitted:
+                if permitted and not forbidden:
                     func(*args, **kwargs)
 
         return permissions_wrapper

@@ -46,11 +46,6 @@ class Commands:
                 if last_used:
                     used_diff = datetime.now() - last_used
                     if used_diff.seconds < cooldown:
-                        self, e, msg, c, bot = args
-                        cmd = msg[0][1:]
-                        current_cd = cooldown - used_diff.seconds
-                        c.privmsg(bot.channel, f"{cmd} is still on" +
-                                  f" a {current_cd} second cooldown!")
                         return
                 args[0].cooldowns[func.__name__] = datetime.now()
                 func(*args, **kwargs)
@@ -116,7 +111,6 @@ class Commands:
 
                 elif not forbidden:
                     for badge, value in badges.items():
-                        print("Badge, value: ", badge, value)
                         if perm_badges.get(badge) == value:
                             permitted = True
                             break

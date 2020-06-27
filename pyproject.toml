@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "twitchat"
+author = "Fitti"
+author-email = "dev@fitti.io"
+home-page = "https://github.com/Fittiboy/python-twitch-bot"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Communications :: Chat :: Internet Relay Chat"
+]
+requires = [
+    "requests>=2.24.0",
+    "irc>=18.0.0"
+]
+requires-python = ">=3.8"
+description-file = "README.md"
+keywords = "twitch, twitch.tv, chat bot, bot"
+
+[tool.flit.scripts]
+twitchat = "twitchbot:main"

@@ -1,7 +1,7 @@
 How to use the twitchat bot
 ====================================
 
-The $project chat bot will run on your own machine and allow you to run
+The project chat bot will run on your own machine and allow you to run
 more complex commands than other Twitch bots.
 
 

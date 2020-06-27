@@ -33,7 +33,7 @@ main()
 ```
 Your bot should now be connecting to your Twitch chat and saying "I am here now :)". Try using !ping to see him reply!<br>
 
-Refer to the [full documentation](/) for further configuration of your bot, including all your commands.
+Refer to the [full documentation](https://python-twitch-bot.readthedocs.io/en/latest/index.html) for further configuration of your bot, including all your commands.
 
 ## How to set up your bot account
 
@@ -51,4 +51,4 @@ For the final step, head over to [this site](https://twitchapps.com/tmi) and con
 
 ## Full documentation
 
-The full documentation for the bot is available [here](/)
+The full documentation for the bot is available [here](https://python-twitch-bot.readthedocs.io/en/latest/index.html)

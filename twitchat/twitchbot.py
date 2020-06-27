@@ -3,6 +3,7 @@ import requests
 import time
 from time import time as nowfunc
 import twitchat.commands as commands
+from twitchat.timers import timers
 import json
 from importlib import reload
 
@@ -110,8 +111,6 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         return send
 
     def send_timers(self, send, c):
-        with open('timers.json') as timerfile:
-            timers = json.load(timerfile)
         for command in send:
             name = timers[command]
             c.privmsg(self.channel,

@@ -1,8 +1,6 @@
 import functools
 from datetime import datetime
 import json
-from shutil import copyfile
-from twitchat import comm_template
 
 from twitchat.get_user_info import get_uid
 from twitchat.duckduckgo_abstract import abstract
@@ -248,63 +246,3 @@ class Commands:
         perms[f'on_{cmd}'] = cmd_perms
         with open('permissions.json', 'w') as perms_file:
             json.dump(perms, perms_file, indent=4)
-
-    @check_permissions
-    @check_cooldown(cooldown=0)
-    def on_commadd(self, e, msg, c, bot):
-        """!commadd command cooldown(not required, default 30)
-        text(including {args})"""
-        if len(msg) > 2:
-            with open("commands_backups/num.json") as backupnum_file:
-                backup_num = json.load(backupnum_file) + 1
-            with open("commands_backups/num.json", "w") as backupnum_file:
-                json.dump(backup_num, backupnum_file)
-            path = f"commands_backups/commands_{backup_num}.py"
-            copyfile("commands.py", path)
-
-            commname = msg[1][1:] if msg[1][0] == "!" else msg[1]
-
-            try:
-                cdwn = int(msg[2])
-                if len(msg) > 3:
-                    commtext = msg[3:]
-                else:
-                    commtext = ""
-            except ValueError:
-                cdwn = 30
-                commtext = msg[2:]
-
-            arguments = []
-
-            for word in commtext:
-                if "{" in word and "}" in word:
-                    wordlist = word.replace("{", "}__ARGUMENT__").split("}")
-                    for word in wordlist:
-                        if "__ARGUMENT__" in word:
-                            arguments.append(word[12:])
-
-            commtext = " ".join(commtext)
-            argnum = len(arguments)
-            formatlist = []
-
-            for index, arg in enumerate(arguments):
-                msg_index = index + 1
-                formatlist.append(f"{arg}=msg[{msg_index}]")
-            if formatlist:
-                formatstring = ".format(" + ", ".join(formatlist) + ")"
-            else:
-                formatstring = ""
-
-            template = comm_template.template
-            full_command = template.format(cdwn=cdwn, cmdname=commname,
-                                           argnum=argnum, text=commtext,
-                                           formattext=formatstring)
-
-            with open("commands.py") as commandsfile:
-                lines = commandsfile.readlines()
-
-            index = len(lines) - 2
-            lines.insert(index, full_command)
-
-            with open("commands.py", "w") as commandsfile:
-                commandsfile.write("".join(lines))

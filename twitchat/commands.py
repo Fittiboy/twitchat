@@ -17,7 +17,7 @@ def exec(func):
             return
         cmd = msg[0][1:]
         cmd_func_name = f"on_{cmd}".lower()
-        method = getattr(cmd_obj, cmd_func_name, cmd_obj.extra)
+        method = getattr(cmd_obj, cmd_func_name, Commands.nothing)
         method(e, msg, c, bot)
     return exec_wrapper
 
@@ -32,6 +32,9 @@ class Commands:
                 cooled = Commands.check_cooldown(cd)(value)
                 permitted = Commands.check_permissions(cooled)
                 self.__dict__[key] = permitted
+
+    def nothing(self):
+        pass
 
     def check_cooldown(cooldown):
         """Use this decorator to add a cooldown to a command"""

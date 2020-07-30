@@ -26,10 +26,21 @@ def main():
         with open('permissions.json', 'w') as permissions_file:
             json.dump(permissions, permissions_file, indent=4)
 
-    settings['username'] = input("Username: ")
-    settings['client_id'] = input("Client-ID: ")
-    settings['token'] = input("token: ")
-    settings['channel'] = input("channel: ").lower()
+    set_setting(settings, 'username', 'Username: ')
+    set_setting(settings, 'client_id', 'Client-ID: ')
+    set_setting(settings, 'token', 'Token: ')
+    set_setting(settings, 'channel', 'Channel: ')
     settings['keepalive'] = 300
     with open('settings.json', 'w') as settings_file:
         json.dump(settings, settings_file, indent=4)
+
+
+def set_setting(settings, setting, prompt):
+    choice = input(prompt)
+    if not choice:
+        print("You have not entered a value. " +
+              "If you want to leave this blank, " +
+              "just hit enter again")
+    if setting == "channel":
+        choice = choice.lower()
+    settings[setting] = choice

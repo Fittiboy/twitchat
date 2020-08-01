@@ -67,33 +67,32 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         representation of the badges.
         """
 
-        # e.tags comes as a list of dictionaries of the form
-        # {'key': key, 'value': value}.  This line changes that
-        # to a single dictionary of the more reasonable form {key: value}.
-        e.tags = {dct['key']: dct['value'] for dct in e.tags}
-
         if e.arguments[0][0] == "!":
-            global cmd_obj
-            if e.arguments[0] == "!reload":
-                badges_tag = e.tags.get('badges')
-                badges_list = []
-                # The badges come as a string with the format
-                # 'badge/version,badge/version,badge/version...'.
-                #
-                # This code converts the string into a more natural
-                # dictionary of the form {badge: version, ...}.
-                if badges_tag:
-                    badges_list = badges_tag.split(",")
-                badges_list_collection = [badge.split("/") for badge
-                                          in badges_list if badge]
+            # e.tags comes as a list of dictionaries of the form
+            # {'key': key, 'value': value}.  This line changes that
+            # to a single dictionary of the more reasonable form {key: value}.
+            e.tags = {dct['key']: dct['value'] for dct in e.tags}
+            badges_tag = e.tags.get('badges')
+            badges_list = []
+            # The badges come as a string with the format
+            # 'badge/version,badge/version,badge/version...'.
+            #
+            # This code converts the string into a more natural
+            # dictionary of the form {badge: version, ...}.
+            if badges_tag:
+                badges_list = badges_tag.split(",")
+            badges_list_collection = [badge.split("/") for badge
+                                      in badges_list if badge]
 
-                badges = {badge_list[0]: badge_list[1] for badge_list
-                          in badges_list_collection}
-                # Update the badges tag for later use in commands.py
-                e.tags.badges = badges
-                # Reloads the commands.py module, allowing for modification of
-                # existing commands while the bot is still running.
+            badges = {badge_list[0]: badge_list[1] for badge_list
+                      in badges_list_collection}
+            # Update the badges tag for later use in commands.py
+            e.tags['badges'] = badges
+            # Reloads the commands.py module, allowing for modification of
+            # existing commands while the bot is still running.
+            if e.arguments[0] == "!reload":
                 if badges.get('broadcaster') == '1':
+                    global cmd_obj
                     global commands
                     commands = reload(commands)
                     cmd_obj = commands.Commands()

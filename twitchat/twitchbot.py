@@ -45,51 +45,73 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
         c.privmsg(self.channel, "I am here now :)")
         self.reconnect = 1
 
-    def on_reconnect(self, c, e):
-        time.sleep(self.reconnect)
-        self.reconnect *= 2
-        c.reconnect()
-
     def on_disconnect(self, c, e):
-        time.sleep(self.reconnect)
-        self.reconnect *= 2
-        c.reconnect()
+        """Attempts to reconnect, with increasing time waited in between
+        attempts.
+        """
 
-    def on_dccdisconnect(self, c, e):
         time.sleep(self.reconnect)
         self.reconnect *= 2
         c.reconnect()
 
     def on_pubmsg(self, c, e):
-        """Tries to execute command if message begins with '!'"""
-        if e.arguments[0][0] == "!":
-            global cmd_obj
-            if e.arguments[0] == "!reload":
-                badges_tag = [dict['value'] for dict in e.tags
-                              if dict['key'] == 'badges']
-                badges_list = []
-                if badges_tag[0]:
-                    badges_list = badges_tag[0].split(",")
-                badges_lists_list = [badge.split("/") for badge in badges_list
-                                     if badge]
+        """Tries to execute command if message begins with '!'.  Also handles
+        the posting of timed messages and reformats some of the input.
 
-                badges = {badge_list[0]: badge_list[1] for badge_list
-                          in badges_lists_list}
-                for badge, value in badges.items():
-                    if badge == "broadcaster" and value == "1":
-                        global commands
-                        commands = reload(commands)
-                        cmd_obj = commands.Commands()
+        A special case is handled in which the !reload command is called.  This
+        is only allowed for the broadcaster and has to be executed outside of
+        commands.py.  The !reload commands reloads the commands.py module.
+
+        Additionally, the unnatural format of e.tags is turned
+        into a more reasonable dictionary, also containing a dictionary
+        representation of the badges.
+        """
+
+        if e.arguments[0][0] == "!":
+            # e.tags comes as a list of dictionaries of the form
+            # {'key': key, 'value': value}.  This line changes that
+            # to a single dictionary of the more reasonable form {key: value}.
+            e.tags = {dct['key']: dct['value'] for dct in e.tags}
+            badges_tag = e.tags.get('badges')
+            badges_list = []
+            # The badges come as a string with the format
+            # 'badge/version,badge/version,badge/version...'.
+            #
+            # This code converts the string into a more natural
+            # dictionary of the form {badge: version, ...}.
+            if badges_tag:
+                badges_list = badges_tag.split(",")
+            badges_list_collection = [badge.split("/") for badge
+                                      in badges_list if badge]
+
+            badges = {badge_list[0]: badge_list[1] for badge_list
+                      in badges_list_collection}
+            # Update the badges tag for later use in commands.py
+            e.tags['badges'] = badges
+            # Reloads the commands.py module, allowing for modification of
+            # existing commands while the bot is still running.
+            if e.arguments[0] == "!reload":
+                if badges.get('broadcaster') == '1':
+                    global cmd_obj
+                    global commands
+                    commands = reload(commands)
+                    cmd_obj = commands.Commands()
             else:
                 self.exec_command(c, e, cmd_obj)
 
         else:
+            # Times messages are only sent after a certain amount of non-timed
+            # messages.  Calling send_timers from here allows counting
+            # messages.  Timed messages should not follow execution of commands
+            # immediately, so this is only called if no command was used.
             self.send_timers(self.timers(), c)
 
     @commands.exec
     def exec_command(self, c, e, cmd_obj):
-        """Check if command exists and checks for possible cooldown,
-        then executes if possible"""
+        """Check if command exists and checks for cooldown, then exectues if
+        permitted.
+        """
+
         return e, c, self, cmd_obj
 
     def timers(self):

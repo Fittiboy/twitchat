@@ -56,21 +56,12 @@ class Commands:
         """Use this decorator to add a permission check to a command"""
         @functools.wraps(func)
         def permissions_wrapper(*args, **kwargs):
+            e = args[1]
             if len(args) == 4:
                 args = list(args)
                 args.insert(0, args[0].arguments[0])
-            uid = [dict['value'] for dict in args[1].tags
-                   if dict['key'] == 'user-id'][0]
-            badges_tag = [dict['value'] for dict in args[1].tags
-                          if dict['key'] == 'badges']
-            badges_list = []
-            if badges_tag[0]:
-                badges_list = badges_tag[0].split(",")
-            badges_lists_list = [badge.split("/") for badge in badges_list
-                                 if badge]
-
-            badges = {badge_list[0]: badge_list[1] for badge_list
-                      in badges_lists_list}
+            uid = e.tags['user-id']
+            badges = e.tags['badges']
 
             with open('permissions.json') as perms_file:
                 perms = json.load(perms_file)

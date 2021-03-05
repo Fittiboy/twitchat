@@ -195,14 +195,18 @@ class Commands:
                 c.privmsg(bot.channel, f"{user} can no longer use !{cmd}")
 
             elif arf == "forbid":
+                if uid in cmd_perms['forbid']['uids']:
+                    cmd_perms['forbid']['uids'].remove(uid)
+                    c.privmsg(bot.channel, f"{user} is allowed to use " +
+                              f"!{cmd} again")
+
                 if uid not in cmd_perms['forbid']['uids']:
                     cmd_perms['forbid']['uids'].append(uid)
+                    c.privmsg(bot.channel, f"{user} is no longer allowed " +
+                                           f"to use !{cmd}")
 
-                if uid in cmd_perms['uids']:
-                    cmd_perms['uids'].remove(uid)
-
-                c.privmsg(bot.channel, f"{user} is no longer allowed " +
-                                       f"to use !{cmd}")
+                    if uid in cmd_perms['uids']:
+                        cmd_perms['uids'].remove(uid)
 
         elif tp == "badge" and len(msg) == 6:
             badge = msg[4]

@@ -100,7 +100,7 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
                 self.exec_command(c, e, cmd_obj)
 
         else:
-            # Times messages are only sent after a certain amount of non-timed
+            # Timed messages are only sent after a certain amount of non-timed
             # messages.  Calling send_timers from here allows counting
             # messages.  Timed messages should not follow execution of commands
             # immediately, so this is only called if no command was used.

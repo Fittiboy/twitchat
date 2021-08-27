@@ -1,5 +1,4 @@
 import irc.bot
-import requests
 import time
 from time import time as nowfunc
 import twitchat.commands as commands
@@ -19,11 +18,6 @@ class TwitchBot(irc.bot.SingleServerIRCBot):
                         'Accept': 'application/vnd.twitchtv.v5+json'}
         self.keepalive = keepalive
         self.reconnect = 1  # double every failed reconnection attmept
-
-        # Get the channel id, we will need this for v5 API calls
-        url = 'https://api.twitch.tv/kraken/users?login=' + channel
-        r = requests.get(url, headers=self.headers).json()
-        self.channel_id = r['users'][0]['_id']
 
         # Create IRC bot connection
         server = 'irc.chat.twitch.tv'

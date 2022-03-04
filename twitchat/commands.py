@@ -57,6 +57,12 @@ class Commands:
         @functools.wraps(func)
         def permissions_wrapper(*args, **kwargs):
             e = args[1]
+            try:
+                e.tags
+            except AttributeError:
+                # Commands from extra_commands.py will
+                # have e as the 1st arg, instead of the 2nd
+                e = args[0]
             if len(args) == 4:
                 args = list(args)
                 args.insert(0, args[0].arguments[0])
